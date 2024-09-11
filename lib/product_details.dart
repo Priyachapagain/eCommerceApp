@@ -1,19 +1,29 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:newecommerce/app_color.dart';
-import 'Product.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'product.dart';
+import 'app_color.dart';
 import 'cart_page.dart';
 
 List<Product> cart = [];
+
 class ProductDetailScreen extends StatelessWidget {
   final Product product;
 
   ProductDetailScreen({required this.product});
 
-  void addToCart(Product product) {
-    bool productExists = false;
+  Future<void> addToCart(Product product) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Load existing cart from SharedPreferences
+    List<String>? storedCart = prefs.getStringList('cart');
+    List<Product> currentCart = storedCart != null
+        ? storedCart.map((item) => Product.fromJson(jsonDecode(item))).toList()
+        : [];
 
     // Check if the product is already in the cart
-    for (var cartProduct in cart) {
+    bool productExists = false;
+    for (var cartProduct in currentCart) {
       if (cartProduct.id == product.id) {
         productExists = true;
         cartProduct.quantity += 1; // Increment quantity if product exists
@@ -23,9 +33,13 @@ class ProductDetailScreen extends StatelessWidget {
 
     // If the product doesn't exist in the cart, add it with quantity 1
     if (!productExists) {
-      product.quantity = 1; // Set initial quantity to 1
-      cart.add(product);
+      product.quantity = 1;
+      currentCart.add(product);
     }
+
+    // Save the updated cart back to SharedPreferences
+    List<String> updatedCart = currentCart.map((item) => jsonEncode(item.toJson())).toList();
+    await prefs.setStringList('cart', updatedCart);
   }
 
   @override
@@ -37,25 +51,24 @@ class ProductDetailScreen extends StatelessWidget {
           product.title,
           style: const TextStyle(
             color: AppColors.mainColor,
-            fontSize: 20, // Adjust font size for the title
+            fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,
-        backgroundColor: Colors.white, // Customize background color if needed
-        elevation: 0, // Remove shadow if desired
-        toolbarHeight: 50, // Set a smaller height for the AppBar
+        backgroundColor: Colors.white,
+        elevation: 0,
+        toolbarHeight: 50,
         titleTextStyle: const TextStyle(
-          fontSize: 18, // Adjust the font size of the title text
+          fontSize: 18,
           fontWeight: FontWeight.bold,
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.mainColor,),
+          icon: const Icon(Icons.arrow_back, color: AppColors.mainColor),
           onPressed: () => Navigator.pop(context),
         ),
       ),
       body: SingleChildScrollView(
-
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -79,17 +92,34 @@ class ProductDetailScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
+
+              // Rating and review count section
+              if (product.rating != null) ...[
+                Row(
+                  children: [
+                    // Display star icons based on rating
+                    Icon(Icons.star, color: Colors.amber),
+                    Text('${product.rating!.rate.toStringAsFixed(1)}'),
+                    const SizedBox(width: 8),
+                    Text('(${product.rating!.count} reviews)'),
+                  ],
+                ),
+                const SizedBox(height: 8),
+              ],
+
               Text(
                 '\$${product.price.toStringAsFixed(2)}',
                 style: const TextStyle(fontSize: 40, color: Colors.green),
               ),
               const SizedBox(height: 14),
-              const Text("Description",style: const TextStyle(fontSize: 25,
-                  )),
+              const Text(
+                "Description",
+                style: TextStyle(fontSize: 25),
+              ),
               const SizedBox(height: 6),
-              Text(product.description, style: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.blueGrey),
+              Text(
+                product.description,
+                style: const TextStyle(fontSize: 16, color: Colors.blueGrey),
                 textAlign: TextAlign.justify,
               ),
             ],
@@ -108,27 +138,23 @@ class ProductDetailScreen extends StatelessWidget {
           children: [
             Expanded(
               child: Container(
-                height: 52,
+                height: 50,
                 decoration: BoxDecoration(
-                  border: Border.all(color: AppColors.mainColor, width: 2), // Border color and width
-                  borderRadius: BorderRadius.circular(10), // Rounded corners
+                  border: Border.all(color: AppColors.mainColor, width: 1.5),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 child: TextButton(
                   onPressed: () {
-                    // Add to cart functionality
                     addToCart(product);
-
-                    // Show a confirmation message (SnackBar)
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
                           '${product.title} added to the cart!',
-                          style: TextStyle(color: Colors.white), // Set text color if needed
+                          style: TextStyle(color: Colors.white),
                         ),
-                        backgroundColor: AppColors.greenColor, // Set the background color
+                        backgroundColor: AppColors.greenColor,
                       ),
                     );
-
                   },
                   style: TextButton.styleFrom(
                     foregroundColor: AppColors.mainColor,
@@ -139,7 +165,7 @@ class ProductDetailScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.shopping_cart_outlined),
-                      SizedBox(width: 3,),
+                      SizedBox(width: 3),
                       Text('Add to Cart'),
                     ],
                   ),
@@ -148,31 +174,24 @@ class ProductDetailScreen extends StatelessWidget {
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: AppColors.mainColor, width: 2), // Border color and width
-                  borderRadius: BorderRadius.circular(10), // Rounded corners
-                ),
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Navigate to Checkout screen
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => CartPage(products: cart)),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.mainColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => CartPage()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.mainColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 15),
-                    child: Text(
-                      'Checkout',
-                      style: TextStyle(fontSize: 16, color: Colors.white),
-                    ),
+                ),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 15),
+                  child: Text(
+                    'Checkout',
+                    style: TextStyle(fontSize: 16, color: Colors.white),
                   ),
                 ),
               ),
