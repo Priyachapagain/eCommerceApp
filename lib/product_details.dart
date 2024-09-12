@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'product.dart';
 import 'app_color.dart';
-import 'cart_page.dart';
-
-List<Product> cart = [];
+import 'single_product_cart_page.dart'; // Import the new file
 
 class ProductDetailScreen extends StatelessWidget {
   final Product product;
@@ -38,7 +36,8 @@ class ProductDetailScreen extends StatelessWidget {
     }
 
     // Save the updated cart back to SharedPreferences
-    List<String> updatedCart = currentCart.map((item) => jsonEncode(item.toJson())).toList();
+    List<String> updatedCart =
+        currentCart.map((item) => jsonEncode(item.toJson())).toList();
     await prefs.setStringList('cart', updatedCart);
   }
 
@@ -74,13 +73,10 @@ class ProductDetailScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Hero(
-                tag: product.id,
-                child: Center(
-                  child: Image.network(
-                    product.image,
-                    height: 400,
-                  ),
+              Center(
+                child: Image.network(
+                  product.image,
+                  height: 400,
                 ),
               ),
               const SizedBox(height: 25),
@@ -92,21 +88,6 @@ class ProductDetailScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
-
-              // Rating and review count section
-              if (product.rating != null) ...[
-                Row(
-                  children: [
-                    // Display star icons based on rating
-                    Icon(Icons.star, color: Colors.amber),
-                    Text('${product.rating!.rate.toStringAsFixed(1)}'),
-                    const SizedBox(width: 8),
-                    Text('(${product.rating!.count} reviews)'),
-                  ],
-                ),
-                const SizedBox(height: 8),
-              ],
-
               Text(
                 '\$${product.price.toStringAsFixed(2)}',
                 style: const TextStyle(fontSize: 40, color: Colors.green),
@@ -178,7 +159,12 @@ class ProductDetailScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => CartPage()),
+                    MaterialPageRoute(
+                      builder: (context) => SinglebillingPage(
+                        product: product,
+                        totalPrice: product.price, // Assuming totalPrice is the price of the single product
+                      ),
+                    ),
                   );
                 },
                 style: ElevatedButton.styleFrom(

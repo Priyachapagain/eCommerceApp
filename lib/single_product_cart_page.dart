@@ -1,29 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:http/http.dart' as http;
-import 'package:newecommerce/preferences_manager.dart';
 import 'dart:convert';
+import 'preferences_manager.dart'; // Ensure this file exists
 import 'auth/signup_screen.dart';
 import 'product.dart';
 import 'app_color.dart';
 
-class BillingPage extends StatefulWidget {
-  final List<Product> selectedProducts;
+class SinglebillingPage extends StatefulWidget {
+  final Product product;
   final double totalPrice;
-  final Map<int, int> productQuantities;
 
-  const BillingPage({
+  const SinglebillingPage({
     super.key,
-    required this.selectedProducts,
+    required this.product,
     required this.totalPrice,
-    required this.productQuantities,
   });
 
   @override
   _BillingPageState createState() => _BillingPageState();
 }
 
-class _BillingPageState extends State<BillingPage> {
+class _BillingPageState extends State<SinglebillingPage> {
   Map<String, dynamic>? paymentIntentData;
   bool isSignedIn = false;
 
@@ -117,8 +115,6 @@ class _BillingPageState extends State<BillingPage> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => SignupScreen(
-                   /* selectedProducts: widget.selectedProducts,
-                    totalPrice: widget.totalPrice,*/
                   ),
                 ),
               );
@@ -126,17 +122,14 @@ class _BillingPageState extends State<BillingPage> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.mainColor,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child: const Text('Sign Up', style: TextStyle(fontSize: 16, color: Colors.white)),
+            child: const Text('Sign Up'),
           ),
           TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            style: TextButton.styleFrom(foregroundColor: Colors.grey),
-            child: const Text('Cancel'),
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -147,21 +140,41 @@ class _BillingPageState extends State<BillingPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Confirm Purchase'),
-        content: const Text('Are you sure you want to proceed with the payment?'),
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: const Row(
+          children: [
+            Icon(Icons.info_outline, color: Colors.green),
+            SizedBox(width: 8),
+            Text(
+              'Confirm Payment',
+              style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        content: Text(
+          'Are you sure you want to pay \$${widget.totalPrice.toStringAsFixed(2)}?',
+          style: const TextStyle(fontSize: 16, color: Colors.grey),
+        ),
         actions: [
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(context);
-              await processStripePayment();
-            },
-            child: const Text('Confirm'),
-          ),
-          TextButton(
+          ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
+              processStripePayment();
             },
-            child: const Text('Cancel'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.mainColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: const Text('Yes, Pay Now', style: TextStyle(color: Colors.white),),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -196,33 +209,24 @@ class _BillingPageState extends State<BillingPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Selected Products:',
+              'Selected Product:',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
-            Expanded(
-              child: ListView.builder(
-                itemCount: widget.selectedProducts.length,
-                itemBuilder: (context, index) {
-                  final product = widget.selectedProducts[index];
-                  final quantity = widget.productQuantities[product.id] ?? 1; // Retrieve quantity
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                        boxShadow: [BoxShadow(color: Colors.grey.shade200, blurRadius: 8, spreadRadius: 2)],
-                      ),
-                      child: ListTile(
-                        leading: Image.network(product.image, width: 60, height: 60),
-                        title: Text(product.title),
-                        subtitle: Text('Price: \$${product.price.toStringAsFixed(2)} x$quantity', ),
-                      ),
-                    ),
-                  );
-                },
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [BoxShadow(color: Colors.grey.shade200, blurRadius: 8, spreadRadius: 2)],
+                ),
+                child: ListTile(
+                  leading: Image.network(widget.product.image, width: 60, height: 60),
+                  title: Text(widget.product.title),
+                  subtitle: Text('Price: \$${widget.product.price.toStringAsFixed(2)}'),
+                ),
               ),
             ),
             const SizedBox(height: 10),
@@ -247,7 +251,9 @@ class _BillingPageState extends State<BillingPage> {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.mainColor,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                     child: const Text('Cash Payment', style: TextStyle(fontSize: 16, color: Colors.white)),
                   ),
@@ -264,7 +270,9 @@ class _BillingPageState extends State<BillingPage> {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.mainColor,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                     child: const Text('Pay using Stripe', style: TextStyle(fontSize: 16, color: Colors.white)),
                   ),

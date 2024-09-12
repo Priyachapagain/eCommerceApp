@@ -1,26 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:newecommerce/cart_page.dart';
 import 'package:newecommerce/product_list.dart';
+import 'package:newecommerce/profile_screen.dart';
 import 'app_color.dart';
-
-// Define the individual pages
-
-
-
-
-
 
 class NotificationsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text('Notifications Page', style: const TextStyle(fontSize: 24)));
+    return Center(
+        child:
+            Text('Notifications Page', style: const TextStyle(fontSize: 24)));
   }
 }
 
 class MorePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text('More Page', style: const TextStyle(fontSize: 24)));
+    return Center(
+        child: Text('More Page', style: const TextStyle(fontSize: 24)));
   }
 }
 
@@ -36,7 +33,7 @@ class _HomePageState extends State<HomePage> {
     ProductListScreen(),
     CartPage(),
     NotificationsPage(),
-    MorePage(),
+    ProfileScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -81,5 +78,3 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
-
-

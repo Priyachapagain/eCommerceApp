@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'product.dart';
 
@@ -5,7 +6,7 @@ class ProductCard extends StatelessWidget {
   final Product product;
   final void Function() onTap;
 
-  ProductCard({required this.product, required this.onTap});
+   ProductCard({required this.product, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -28,8 +29,8 @@ class ProductCard extends StatelessWidget {
                       child: Stack(
                         children: [
                           product.image.isNotEmpty
-                              ? Image.network(
-                            product.image,
+                              ? CachedNetworkImage(
+                            imageUrl: product.image,
                             fit: BoxFit.fitHeight,
                           )
                               : const Placeholder(
@@ -49,16 +50,16 @@ class ProductCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   if (product.rating != null) ...[
-                    Icon(Icons.star, color: Colors.amber, size: 16.0),
-                    SizedBox(width: 4.0),
+                    const Icon(Icons.star, color: Colors.amber, size: 16.0),
+                    const SizedBox(width: 4.0),
                     Text(
-                      '${product.rating!.rate.toStringAsFixed(1)}', // Display the rating
+                      product.rating!.rate.toStringAsFixed(1), // Display the rating
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    SizedBox(width: 8.0),
+                    const SizedBox(width: 8.0),
                     Text(
                       '(${product.rating!.count} reviews)', // Display the count of reviews
-                      style: TextStyle(color: Colors.grey),
+                      style: const TextStyle(color: Colors.grey),
                     ),
                   ],
                 ],
@@ -68,14 +69,15 @@ class ProductCard extends StatelessWidget {
               padding: const EdgeInsets.all(4.0),
               child: Text(
                 product.title,
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Text('\$${product.price.toStringAsFixed(2)}', style: TextStyle(color: Colors.green, fontSize: 18),),
+              child: Text('\$${product.price.toStringAsFixed(2)}',
+                style: const TextStyle(color: Colors.green, fontSize: 18),),
             ),
-            SizedBox(height: 10,)
+            const SizedBox(height: 10,)
             // Add rating and count section
 
           ],

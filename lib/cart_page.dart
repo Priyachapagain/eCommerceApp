@@ -351,9 +351,10 @@ class _CartPageState extends State<CartPage> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => BillingPage(
+                                productQuantities: productQuantities,
                                 selectedProducts: selectedProductsList,
                                 totalPrice: getTotalPrice(),
-                                productQuantities: productQuantities, // Pass the product quantities
+                             // Pass the product quantities
                               ),
                             ),
                           );
