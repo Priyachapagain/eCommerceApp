@@ -14,6 +14,26 @@ eCommerceApp is a Flutter-based mobile application designed to provide a seamles
 - **User Authentication**: Firebase Authentication is used for user login and sign-up.
 - **Order Management**: Firebase Firestore is used for storing user orders.
 
+## Screenshots
+
+### ProductList
+<img src="https://github.com/Priya129/eCommerceApp/blob/main/assets/Images/productlist.jpg" alt="Product List" height="300"/>)
+
+### Product Detail
+<img src="https://github.com/Priya129/eCommerceApp/blob/main/assets/Images/product_detail.jpg" alt="Product Detail" height="300"/>)
+
+### CartPage
+<img src="https://github.com/Priya129/eCommerceApp/blob/main/assets/Images/cartpage.jpg" alt="CartPage" height="300"/>)
+
+### Profile
+<img src="https://github.com/Priya129/eCommerceApp/blob/main/assets/Images/profile.jpg" alt="Profile" height="300"/>)
+
+### Payment
+<img src="https://github.com/Priya129/eCommerceApp/blob/main/assets/Images/payment.jpg" alt="Payment" height="300"/>)
+
+### Notification
+<img src="https://github.com/Priya129/eCommerceApp/blob/main/assets/Images/notification.jpg" alt="Notification" height="300"/>)
+
 ## Installation
 
 ### 1. Clone the Repository
