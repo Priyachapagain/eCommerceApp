@@ -35,13 +35,13 @@ eCommerceApp is a Flutter-based mobile application designed to provide a seamles
 <img src="https://github.com/Priya129/eCommerceApp/blob/main/assets/Images/notification.jpg" alt="Notification" height="300"/>)
 
 ### OneSignal Platform
-<img src="https://github.com/Priya129/eCommerceApp/blob/main/assets/Images/notification.jpg" alt="OneSignal Platform" height="300"/>)
+<img src="https://github.com/Priya129/eCommerceApp/blob/main/assets/Images/onesignal.png" alt="OneSignal Platform" height="300"/>)
 
 ### Stripe
-<img src="https://github.com/Priya129/eCommerceApp/blob/main/assets/Images/notification.jpg" alt="Stripe" height="300"/>)
+<img src="https://github.com/Priya129/eCommerceApp/blob/main/assets/Images/stripe.png" alt="Stripe" height="300"/>)
 
 ### Firebase
-<img src="https://github.com/Priya129/eCommerceApp/blob/main/assets/Images/notification.jpg" alt="Firebase" height="300"/>)
+<img src="https://github.com/Priya129/eCommerceApp/blob/main/assets/Images/firebase.png" alt="Firebase" height="300"/>)
 
 
 
