@@ -20,37 +20,33 @@ eCommerceApp is a Flutter-based mobile application designed to provide a seamles
 ```bash
 git clone https://github.com/your-username/eCommerceApp.git
 cd eCommerceApp
-
-### 1. Install Dependencies
+2. Install Dependencies
 Ensure you have Flutter installed. Then, install the necessary packages:
 
-```bash
+bash
+Copy code
 flutter pub get
-
-### 2. Setup Firebase
-- **Create a Firebase project and add your Android/iOS app.
-- **Download google-services.json (for Android) or GoogleService-Info.plist (for iOS) and place them in the respective folders.
-- **Enable Firebase Authentication, Firestore, and Firebase Storage.
-
-### 3. Setup Hive
-- **Hive is used for offline data storage. Run the Hive generator after making any changes to the data model:
-
-```bash
+3. Setup Firebase
+Create a Firebase project and add your Android/iOS app.
+Download google-services.json (for Android) or GoogleService-Info.plist (for iOS) and place them in the respective folders.
+Enable Firebase Authentication, Firestore, and Firebase Storage.
+4. Setup Hive
+Hive is used for offline data storage. Run the Hive generator after making any changes to the data model:
+bash
+Copy code
 flutter pub run build_runner build
-
-### 4. Stripe Setup
-- **Follow the official Stripe documentation to get your API keys. Add your publishableKey in the Stripe configuration in the app.
-
-### 5. OneSignal Setup
-- **Create an account on OneSignal, configure your app, and get your app_id.
-- **Initialize OneSignal in the app using the app_id.
-
-### 6. Run the App
-```bash
+5. Stripe Setup
+Follow the official Stripe documentation to get your API keys. Add your publishableKey in the Stripe configuration in the app.
+6. OneSignal Setup
+Create an account on OneSignal, configure your app, and get your app_id.
+Initialize OneSignal in the app using the app_id.
+7. Run the App
+bash
+Copy code
 flutter run
-
-### 7. Packages Used
-
+Packages Used
+yaml
+Copy code
 dependencies:
   flutter_riverpod: ^2.5.1
   cached_network_image: ^3.4.1
@@ -74,5 +70,4 @@ dependencies:
 dev_dependencies:
   hive_generator: ^1.0.0
   build_runner: ^2.1.5
-  flutter_launcher_icons: "^0.13.1"
-
+  flutter_launcher_icons: ^0.13.1
