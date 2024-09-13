@@ -61,7 +61,7 @@ flutter run
 
 # Packages Used
 dependencies:
-  - **flutter_riverpod: ^2.5.1
+  - flutter_riverpod: ^2.5.1
   - **cached_network_image: ^3.4.1
   - **hive: ^2.2.3
   - **hive_flutter: ^1.1.0
