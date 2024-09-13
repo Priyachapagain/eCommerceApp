@@ -34,6 +34,21 @@ eCommerceApp is a Flutter-based mobile application designed to provide a seamles
 ### Notification
 <img src="https://github.com/Priya129/eCommerceApp/blob/main/assets/Images/notification.jpg" alt="Notification" height="300"/>)
 
+### OneSignal Platform
+<img src="https://github.com/Priya129/eCommerceApp/blob/main/assets/Images/notification.jpg" alt="OneSignal Platform" height="300"/>)
+
+### Stripe
+<img src="https://github.com/Priya129/eCommerceApp/blob/main/assets/Images/notification.jpg" alt="Stripe" height="300"/>)
+
+### Firebase
+<img src="https://github.com/Priya129/eCommerceApp/blob/main/assets/Images/notification.jpg" alt="Firebase" height="300"/>)
+
+
+
+## Demo Video
+
+Watch a demo of the ToDo App here: [eCommerce Video](https://youtu.be/yEeQl5p0e_U?si=cmmF0fqYu5jGFEvO)
+
 ## Installation
 
 ### 1. Clone the Repository
