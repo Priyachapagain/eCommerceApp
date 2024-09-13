@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'billing_page.dart';
-import 'product.dart';
-import 'app_color.dart';
+import '../bill_pages/billing_page.dart';
+import '../product_pages/product.dart';
+import '../global/app_color.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -13,11 +13,10 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  List<Product> cartProducts = [
-  ]; // Store products loaded from SharedPreferences
-  Map<int, int> productQuantities = {}; // Maps product ID to quantity
-  Map<int, bool> selectedProducts = {}; // Maps product ID to selection state
-  bool selectAll = false; // Tracks whether all products are selected
+  List<Product> cartProducts = [];
+  Map<int, int> productQuantities = {};
+  Map<int, bool> selectedProducts = {};
+  bool selectAll = false;
 
   @override
   void initState() {
@@ -25,7 +24,6 @@ class _CartPageState extends State<CartPage> {
     _loadCartData();
   }
 
-  // Load cart data from SharedPreferences
   Future<void> _loadCartData() async {
     final prefs = await SharedPreferences.getInstance();
     List<String>? storedCart = prefs.getStringList('cart');
@@ -42,7 +40,6 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
-  // Save updated cart data to SharedPreferences
   Future<void> _saveCartData() async {
     final prefs = await SharedPreferences.getInstance();
     List<String> updatedCart = cartProducts
@@ -65,8 +62,7 @@ class _CartPageState extends State<CartPage> {
     setState(() {
       selectAll = value!;
       cartProducts.forEach((product) {
-        selectedProducts[product.id] =
-            selectAll; // Set all products to selected state
+        selectedProducts[product.id] = selectAll;
       });
     });
   }
@@ -87,9 +83,7 @@ class _CartPageState extends State<CartPage> {
               child: const Text('Cancel'),
             ),
             ElevatedButton(
-              onPressed: () {
-
-              },
+              onPressed: () {},
               child: const Text('Sign Up'),
             ),
           ],
@@ -98,13 +92,12 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
-  // Remove a product from the cart
   void removeProduct(Product product) {
     setState(() {
-      cartProducts.remove(product); // Remove product from the list
-      productQuantities.remove(product.id); // Remove quantity mapping
-      selectedProducts.remove(product.id); // Remove selection mapping
-      _saveCartData(); // Save updated cart to SharedPreferences
+      cartProducts.remove(product);
+      productQuantities.remove(product.id);
+      selectedProducts.remove(product.id);
+      _saveCartData();
     });
   }
 
@@ -189,8 +182,7 @@ class _CartPageState extends State<CartPage> {
                                   ),
                                 ),
                                 const SizedBox(height: 4),
-                                Text(
-                                    '\$ ${product.price.toStringAsFixed(2)}'),
+                                Text('\$ ${product.price.toStringAsFixed(2)}'),
                               ],
                             ),
                           ),
@@ -272,8 +264,7 @@ class _CartPageState extends State<CartPage> {
                             icon: const Icon(Icons.delete_outlined,
                                 color: AppColors.mainColor),
                             onPressed: () {
-                              removeProduct(
-                                  product); // Remove product from cart
+                              removeProduct(product); // Remove product from cart
                             },
                           ),
                         ],
@@ -284,13 +275,8 @@ class _CartPageState extends State<CartPage> {
               },
             ),
           ),
-
-          // Divider between the product list and select all/total
-
-          // White background container below the divider
           Container(
             color: Colors.white,
-            // White background color for the bottom section
             padding: const EdgeInsets.only(
                 left: 16.0, right: 16.0, top: 4.0, bottom: 4.0),
             child: Row(
@@ -329,21 +315,21 @@ class _CartPageState extends State<CartPage> {
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        // Create a list of selected products and their quantities
                         final selectedProductsList = cartProducts
-                            .where((product) => selectedProducts[product.id] == true)
+                            .where((product) =>
+                        selectedProducts[product.id] == true)
                             .toList();
 
-                        // Create a map to track the quantity of each selected product
                         final productQuantities = {
                           for (var product in selectedProductsList)
-                            product.id: product.quantity, // Assuming you have a quantity field in Product model
+                            product.id: product.quantity,
                         };
 
                         if (selectedProductsList.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text('Please select at least one product'),
+                              content:
+                              Text('Please select at least one product'),
                             ),
                           );
                         } else {
@@ -354,24 +340,29 @@ class _CartPageState extends State<CartPage> {
                                 productQuantities: productQuantities,
                                 selectedProducts: selectedProductsList,
                                 totalPrice: getTotalPrice(),
-                             // Pass the product quantities
                               ),
                             ),
-                          );
+                          ).then((_) {
+                            setState(() {
+                              cartProducts.removeWhere((product) =>
+                              selectedProducts[product.id] == true);
+                              selectedProducts.removeWhere(
+                                      (id, selected) => selected == true);
+                              productQuantities.removeWhere((id, quantity) =>
+                                  selectedProducts.containsKey(id));
+                              _saveCartData();
+                            });
+                          });
                         }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.mainColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
                       ),
                       child: const Text(
                         'Place the Order',
-                        style: TextStyle(fontSize: 16, color: Colors.white),
+                        style: TextStyle(color: Colors.white),
                       ),
-                    )
-
+                    ),
                   ],
                 ),
               ],

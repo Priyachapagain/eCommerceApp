@@ -1,6 +1,5 @@
 import 'package:hive/hive.dart';
-
-part 'Product.g.dart'; // This part file is needed for Hive to generate the adapter
+part 'Product.g.dart';
 
 @HiveType(typeId: 0)
 class Product extends HiveObject {
@@ -28,7 +27,7 @@ class Product extends HiveObject {
   @HiveField(7)
   bool isSelected;
 
-  @HiveField(8) // Added a field for the rating
+  @HiveField(8)
   final Rating? rating;
 
   Product({
@@ -51,7 +50,7 @@ class Product extends HiveObject {
       price: json['price'].toDouble(),
       description: json['description'],
       image: json['image'],
-      rating: json['rating'] != null ? Rating.fromJson(json['rating']) : null, // Handling rating
+      rating: json['rating'] != null ? Rating.fromJson(json['rating']) : null,
     );
   }
 
@@ -65,7 +64,7 @@ class Product extends HiveObject {
       'image': image,
       'quantity': quantity,
       'isSelected': isSelected,
-      'rating': rating?.toJson(), // Convert rating to JSON if it exists
+      'rating': rating?.toJson(),
     };
   }
 
@@ -74,7 +73,7 @@ class Product extends HiveObject {
   }
 }
 
-@HiveType(typeId: 1) // Separate typeId for the Rating class
+@HiveType(typeId: 1)
 class Rating {
   @HiveField(0)
   final double rate;

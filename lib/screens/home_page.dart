@@ -1,27 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:newecommerce/cart_page.dart';
-import 'package:newecommerce/product_list.dart';
-import 'package:newecommerce/profile_screen.dart';
-import 'app_color.dart';
-
-class NotificationsPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-        child:
-            Text('Notifications Page', style: const TextStyle(fontSize: 24)));
-  }
-}
-
-class MorePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-        child: Text('More Page', style: const TextStyle(fontSize: 24)));
-  }
-}
+import 'package:newecommerce/cart_item/cart_page.dart';
+import 'package:newecommerce/product_pages/product_list.dart';
+import 'package:newecommerce/screens/profile_screen.dart';
+import '../global/app_color.dart';
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -30,10 +15,9 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    ProductListScreen(),
-    CartPage(),
-    NotificationsPage(),
-    ProfileScreen(),
+    const ProductListScreen(),
+    const CartPage(),
+    const ProfileScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -46,11 +30,11 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.transparentColor,
-      body: _pages[_selectedIndex], // Display the selected page
+      body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        type: BottomNavigationBarType.fixed, // Ensures all items are shown
+        type: BottomNavigationBarType.fixed,
         selectedItemColor: AppColors.mainColor,
         backgroundColor: Colors.white,
         unselectedItemColor: Colors.grey,
@@ -64,10 +48,6 @@ class _HomePageState extends State<HomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.shopping_cart_outlined),
             label: 'Cart',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications_outlined),
-            label: 'Notifications',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_2_outlined),

@@ -1,19 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../app_color.dart';
-import '../billing_page.dart';
-import '../preferences_manager.dart';
-import '../product.dart';
+import 'package:newecommerce/auth/signin_page.dart';
+import '../global/app_color.dart';
+import '../global/preferences_manager.dart';
+import '../product_pages/product_list.dart';
 
 class SignupScreen extends StatefulWidget {
-  /*final List<Product> selectedProducts;
-
-  final double totalPrice;*/
-
   const SignupScreen({
     super.key,
-    /*required this.selectedProducts,
-    required this.totalPrice,*/
   });
 
   @override
@@ -27,7 +21,8 @@ class _SignupScreenState extends State<SignupScreen> {
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -106,7 +101,9 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
                 suffixIcon: IconButton(
                   icon: Icon(
-                    _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
+                    _obscureConfirmPassword
+                        ? Icons.visibility
+                        : Icons.visibility_off,
                   ),
                   onPressed: () {
                     setState(() {
@@ -120,32 +117,37 @@ class _SignupScreenState extends State<SignupScreen> {
             _isLoading
                 ? const CircularProgressIndicator()
                 : ElevatedButton(
-              onPressed: _signUp,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.mainColor,
-                minimumSize: const Size.fromHeight(50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: const SizedBox(
-                width: double.infinity,
-                child: Center(
-                  child: Text(
-                    'Sign Up',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                    onPressed: _signUp,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.mainColor,
+                      minimumSize: const Size.fromHeight(50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const SizedBox(
+                      width: double.infinity,
+                      child: Center(
+                        child: Text(
+                          'Sign Up',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
-            ),
             const SizedBox(height: 16),
             TextButton(
               onPressed: () {
-                Navigator.pushReplacementNamed(context, '/signin');
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SigninScreen(),
+                  ),
+                );
               },
               child: const Text(
                 'Already have an account? Sign In',
@@ -181,25 +183,21 @@ class _SignupScreenState extends State<SignupScreen> {
     }
 
     try {
-      await _auth.createUserWithEmailAndPassword(email: email, password: password);
-
+      await _auth.createUserWithEmailAndPassword(
+          email: email, password: password);
       // Set the sign-in status to true
       await PreferencesManager.setSignedIn(true);
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Sign up successful!")),
       );
-
-      Navigator.pop(context); // Close the SignupScreen
-      /*Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-          builder: (context) => BillingPage(
-            selectedProducts: widget.selectedProducts,
-            totalPrice: widget.totalPrice,
-          ),
+      Navigator.pop(context);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ProductListScreen(),
         ),
-      );*/
+      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error: ${e.toString()}")),

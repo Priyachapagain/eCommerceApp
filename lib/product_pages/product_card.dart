@@ -53,12 +53,12 @@ class ProductCard extends StatelessWidget {
                     const Icon(Icons.star, color: Colors.amber, size: 16.0),
                     const SizedBox(width: 4.0),
                     Text(
-                      product.rating!.rate.toStringAsFixed(1), // Display the rating
+                      product.rating!.rate.toStringAsFixed(1),
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(width: 8.0),
                     Text(
-                      '(${product.rating!.count} reviews)', // Display the count of reviews
+                      '(${product.rating!.count} reviews)',
                       style: const TextStyle(color: Colors.grey),
                     ),
                   ],

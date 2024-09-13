@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class CategoryItem extends StatelessWidget {
   final ImageProvider image;
   final String label;
-  final VoidCallback onTap; // Add onTap callback
+  final VoidCallback onTap;
 
   CategoryItem({required this.image, required this.label, required this.onTap});
 
@@ -18,12 +18,12 @@ class CategoryItem extends StatelessWidget {
             CircleAvatar(
               radius: 25,
               backgroundColor: Colors.white,
-              child: ClipOval( // Clip the image to fit inside the circle
+              child: ClipOval(
                 child: Image(
-                  image: image, // Use Image widget instead of ImageIcon
-                  fit: BoxFit.cover, // Ensure the image fits well within the circle
-                  width: 30, // Set the width to match the CircleAvatar size
-                  height: 30, // Set the height to match the CircleAvatar size
+                  image: image,
+                  fit: BoxFit.cover,
+                  width: 30,
+                  height: 30,
                 ),
               ),
             ),

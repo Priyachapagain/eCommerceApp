@@ -1,34 +1,40 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:http/http.dart' as http;
+import 'package:newecommerce/global/preferences_manager.dart';
 import 'dart:convert';
-import 'preferences_manager.dart'; // Ensure this file exists
-import 'auth/signup_screen.dart';
-import 'product.dart';
-import 'app_color.dart';
+import '../auth/signup_screen.dart';
+import '../product_pages/product.dart';
+import '../global/app_color.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class SinglebillingPage extends StatefulWidget {
-  final Product product;
+class BillingPage extends StatefulWidget {
+  final List<Product> selectedProducts;
   final double totalPrice;
+  final Map<int, int> productQuantities;
 
-  const SinglebillingPage({
+  const BillingPage({
     super.key,
-    required this.product,
+    required this.selectedProducts,
     required this.totalPrice,
+    required this.productQuantities,
   });
 
   @override
   _BillingPageState createState() => _BillingPageState();
 }
 
-class _BillingPageState extends State<SinglebillingPage> {
+class _BillingPageState extends State<BillingPage> {
   Map<String, dynamic>? paymentIntentData;
   bool isSignedIn = false;
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   @override
   void initState() {
     super.initState();
-    Stripe.publishableKey = "your_publishable_key"; // Replace with your actual key
+    Stripe.publishableKey =
+        "pk_test_51PpRH6L7dY78ZxcIadPjWLA0d0oPj2SqKzzSAO7wfL6snXEJJn87X8DOaC3yooNBabX6IAauPxj2RZGPdxaREgOT00KK3RK870"; // Replace with your actual key
     _checkSignInStatus();
   }
 
@@ -45,7 +51,8 @@ class _BillingPageState extends State<SinglebillingPage> {
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
-        body: json.encode({'amount': (widget.totalPrice * 100).toInt()}), // Amount in cents
+        body: json
+            .encode({'amount': (widget.totalPrice).toInt()}), // Amount in cents
       );
 
       if (response.statusCode == 200) {
@@ -75,6 +82,10 @@ class _BillingPageState extends State<SinglebillingPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Payment successful!')),
       );
+
+      // Store product in Firebase after payment
+      await storeProductInFirebase();
+
       setState(() {
         paymentIntentData = null;
       });
@@ -83,6 +94,25 @@ class _BillingPageState extends State<SinglebillingPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Payment failed: $e')),
       );
+    }
+  }
+
+  Future<void> storeProductInFirebase() async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) return;
+    for (var product in widget.selectedProducts) {
+      final quantity = widget.productQuantities[product.id] ?? 1;
+      await FirebaseFirestore.instance.collection('orders').add({
+        'userId': userId, // Add userId to the order
+        'productId': product.id,
+        'title': product.title,
+        'price': product.price,
+        'quantity': quantity,
+        'image': product.image,
+        'totalPrice': widget.totalPrice,
+        'status': 'completed',
+        'timestamp': FieldValue.serverTimestamp(),
+      });
     }
   }
 
@@ -100,7 +130,8 @@ class _BillingPageState extends State<SinglebillingPage> {
             SizedBox(width: 8),
             Text(
               'Sign Up Required',
-              style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+              style:
+                  TextStyle(color: Colors.black54, fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -114,22 +145,25 @@ class _BillingPageState extends State<SinglebillingPage> {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => SignupScreen(
-                  ),
+                  builder: (context) => const SignupScreen(),
                 ),
               );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.mainColor,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(10),
               ),
             ),
-            child: const Text('Sign Up'),
+            child: const Text('Sign Up',
+                style: TextStyle(fontSize: 16, color: Colors.white)),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel', style: TextStyle(color: Colors.red)),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.grey),
+            child: const Text('Cancel'),
           ),
         ],
       ),
@@ -137,6 +171,7 @@ class _BillingPageState extends State<SinglebillingPage> {
   }
 
   void showConfirmationDialog() {
+    double totalAmount = widget.totalPrice;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -150,12 +185,13 @@ class _BillingPageState extends State<SinglebillingPage> {
             SizedBox(width: 8),
             Text(
               'Confirm Payment',
-              style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+              style:
+                  TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
             ),
           ],
         ),
         content: Text(
-          'Are you sure you want to pay \$${widget.totalPrice.toStringAsFixed(2)}?',
+          'Are you sure you want to pay \$${totalAmount.toStringAsFixed(2)}?',
           style: const TextStyle(fontSize: 16, color: Colors.grey),
         ),
         actions: [
@@ -170,7 +206,8 @@ class _BillingPageState extends State<SinglebillingPage> {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child: const Text('Yes, Pay Now', style: TextStyle(color: Colors.white),),
+            child: const Text('Yes, Pay Now',
+                style: TextStyle(color: Colors.white)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -209,73 +246,67 @@ class _BillingPageState extends State<SinglebillingPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Selected Product:',
+              'Selected Products:',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: [BoxShadow(color: Colors.grey.shade200, blurRadius: 8, spreadRadius: 2)],
-                ),
-                child: ListTile(
-                  leading: Image.network(widget.product.image, width: 60, height: 60),
-                  title: Text(widget.product.title),
-                  subtitle: Text('Price: \$${widget.product.price.toStringAsFixed(2)}'),
-                ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: widget.selectedProducts.length,
+                itemBuilder: (context, index) {
+                  final product = widget.selectedProducts[index];
+                  final quantity = widget.productQuantities[product.id] ?? 1;
+                  bool isCompleted = paymentIntentData == null;
+
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.grey.shade200,
+                              blurRadius: 8,
+                              spreadRadius: 2)
+                        ],
+                      ),
+                      child: ListTile(
+                        leading:
+                            Image.network(product.image, width: 60, height: 60),
+                        title: Text(product.title),
+                        subtitle: Text(
+                          'Price: \$${product.price.toStringAsFixed(2)} x$quantity',
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'Total: \$${widget.totalPrice.toStringAsFixed(2)}',
-              style: const TextStyle(color: Colors.green, fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Choose Payment Option:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
             Row(
               children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Cash payment selected')),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.mainColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: const Text('Cash Payment', style: TextStyle(fontSize: 16, color: Colors.white)),
-                  ),
+                Text(
+                  'Total: \$${widget.totalPrice.toStringAsFixed(2)}',
+                  style: const TextStyle(
+                      color: Colors.green,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      if (isSignedIn) {
-                        showConfirmationDialog();
-                      } else {
-                        showSignUpDialog();
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.mainColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: const Text('Pay using Stripe', style: TextStyle(fontSize: 16, color: Colors.white)),
+                const SizedBox(width: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    isSignedIn ? showConfirmationDialog() : showSignUpDialog();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.mainColor,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
                   ),
+                  child: const Text('Payment through Stripe',
+                      style: TextStyle(color: Colors.white)),
                 ),
               ],
             ),

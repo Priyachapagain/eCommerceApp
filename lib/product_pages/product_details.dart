@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'product.dart';
-import 'app_color.dart';
-import 'single_product_cart_page.dart'; // Import the new file
+import '../global/app_color.dart';
+import '../bill_pages/single_product_cart_page.dart';
 
 class ProductDetailScreen extends StatelessWidget {
   final Product product;
@@ -13,29 +13,25 @@ class ProductDetailScreen extends StatelessWidget {
   Future<void> addToCart(Product product) async {
     final prefs = await SharedPreferences.getInstance();
 
-    // Load existing cart from SharedPreferences
     List<String>? storedCart = prefs.getStringList('cart');
     List<Product> currentCart = storedCart != null
         ? storedCart.map((item) => Product.fromJson(jsonDecode(item))).toList()
         : [];
 
-    // Check if the product is already in the cart
     bool productExists = false;
     for (var cartProduct in currentCart) {
       if (cartProduct.id == product.id) {
         productExists = true;
-        cartProduct.quantity += 1; // Increment quantity if product exists
+        cartProduct.quantity += 1;
         break;
       }
     }
 
-    // If the product doesn't exist in the cart, add it with quantity 1
     if (!productExists) {
       product.quantity = 1;
       currentCart.add(product);
     }
 
-    // Save the updated cart back to SharedPreferences
     List<String> updatedCart =
         currentCart.map((item) => jsonEncode(item.toJson())).toList();
     await prefs.setStringList('cart', updatedCart);
@@ -133,7 +129,7 @@ class ProductDetailScreen extends StatelessWidget {
                           '${product.title} added to the cart!',
                           style: TextStyle(color: Colors.white),
                         ),
-                        backgroundColor: AppColors.greenColor,
+                        backgroundColor: Colors.green,
                       ),
                     );
                   },
@@ -160,9 +156,9 @@ class ProductDetailScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => SinglebillingPage(
+                      builder: (context) =>SingleBillingPage(
                         product: product,
-                        totalPrice: product.price, // Assuming totalPrice is the price of the single product
+                        totalPrice: product.price,
                       ),
                     ),
                   );

@@ -5,12 +5,11 @@ import 'package:http/http.dart' as http;
 import 'product.dart';
 import 'product_card.dart';
 import 'product_details.dart';
-import 'app_color.dart';
-import 'categoryitem.dart';
+import '../global/app_color.dart';
+import '../cart_item/categoryitem.dart';
 import 'package:hive/hive.dart';
 import 'package:shimmer/shimmer.dart';
 
-// Provider to access the products box
 final productBoxProvider = Provider<Box<Product>>((ref) {
   return Hive.box<Product>('productsBox');
 });
@@ -29,6 +28,11 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
   List<Product> _allProducts = [];
   List<Product> _filteredProducts = [];
   bool _isLoading = true;
+  bool _hasMore = true;
+  bool _isLoadingMore = false;
+  final int _limit = 20;
+  int _page = 1;
+  late ScrollController _scrollController;
 
   final List<Map<String, dynamic>> _categories = [
     {'name': 'all', 'image': AssetImage('assets/Images/product.png')},
@@ -41,13 +45,20 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchAndStoreProducts('all'); // Fetch all products by default
+    _scrollController = ScrollController()..addListener(_scrollListener);
+    _fetchAndStoreProducts('all');
   }
 
-  Future<List<Product>> fetchProducts({String? category}) async {
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  Future<List<Product>> fetchProducts({String? category, int page = 1, int limit = 5}) async {
     final url = category == 'all'
-        ? 'https://fakestoreapi.com/products'
-        : 'https://fakestoreapi.com/products/category/$category';
+        ? 'https://fakestoreapi.com/products?limit=$limit&page=$page'
+        : 'https://fakestoreapi.com/products/category/$category?limit=$limit&page=$page';
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       List<dynamic> data = jsonDecode(response.body);
@@ -59,24 +70,38 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
     }
   }
 
-  // Fetch products and store them in Hive
   void _fetchAndStoreProducts(String category) async {
     setState(() {
       _isLoading = true;
     });
 
-    List<Product> products = await fetchProducts(category: category);
+    List<Product> products = await fetchProducts(category: category, page: _page, limit: _limit);
     final box = ref.read(productBoxProvider);
 
-    await box.clear(); // Clear the previous data
+    if (products.isEmpty) {
+      setState(() {
+        _hasMore = false;
+        _isLoading = false;
+      });
+      return;
+    }
+
+    if (_page == 1) {
+      await box.clear();
+    }
     for (var product in products) {
-      box.put(product.id, product); // Store each product
+      box.put(product.id, product);
     }
 
     setState(() {
-      _allProducts = products;
-      _filteredProducts = products;
+      if (_page == 1) {
+        _allProducts = products;
+      } else {
+        _allProducts.addAll(products);
+      }
+      _filteredProducts = _allProducts;
       _isLoading = false;
+      _isLoadingMore = false;
     });
   }
 
@@ -91,6 +116,18 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
             .toList();
       }
     });
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+      if (_hasMore && !_isLoadingMore) {
+        setState(() {
+          _isLoadingMore = true;
+          _page++;
+        });
+        _fetchAndStoreProducts(_selectedCategory);
+      }
+    }
   }
 
   // Build shimmer placeholder
@@ -165,7 +202,9 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
             onTap: () {
               setState(() {
                 _selectedCategory = category;
-                _fetchAndStoreProducts(category); // Fetch products based on the selected category
+                _page = 1;
+                _hasMore = true;
+                _fetchAndStoreProducts(category);
               });
             },
           );
@@ -195,6 +234,7 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: CustomScrollView(
+          controller: _scrollController,
           slivers: [
             SliverToBoxAdapter(
               child: Column(
@@ -231,7 +271,17 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                 ],
               ),
             ),
-            _isLoading ? _buildShimmerProductGrid() : _buildProductGrid(),
+            _isLoading && _page == 1 ? _buildShimmerProductGrid() : _buildProductGrid(),
+            if (_isLoadingMore) ...[
+              const SliverToBoxAdapter(
+                child: Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16.0),
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
       ),

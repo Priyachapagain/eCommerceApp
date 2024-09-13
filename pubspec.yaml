@@ -45,6 +45,9 @@ dependencies:
   firebase_core: ^3.4.1
   firebase_storage: ^12.3.0
   image_picker: ^1.1.2
+  cloud_firestore: ^5.4.1
+  intl:
+  onesignal_flutter: ^5.2.5
 
 
 
@@ -58,6 +61,12 @@ dev_dependencies:
     sdk: flutter
   hive_generator:
   build_runner:
+  flutter_launcher_icons: "^0.13.1"
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/Images/shopping-cart.png"
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
