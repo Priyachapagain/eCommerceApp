@@ -61,26 +61,26 @@ flutter run
 
 # Packages Used
 dependencies:
-  flutter_riverpod: ^2.5.1
-  cached_network_image: ^3.4.1
-  hive: ^2.2.3
-  hive_flutter: ^1.1.0
-  dio: ^5.7.0
-  shimmer: ^3.0.0
-  shared_preferences: ^2.2.0
-  sqflite: ^2.3.3+1
-  path: ^1.8.2
-  flutter_stripe: ^4.0.1
-  http: ^0.15.0
-  firebase_auth: ^5.2.1
-  firebase_core: ^3.4.1
-  firebase_storage: ^12.3.0
-  image_picker: ^1.1.2
-  cloud_firestore: ^5.4.1
-  intl: ^0.18.0
-  onesignal_flutter: ^5.2.5
+  - **flutter_riverpod: ^2.5.1
+  - **cached_network_image: ^3.4.1
+  - **hive: ^2.2.3
+  - **hive_flutter: ^1.1.0
+  - **dio: ^5.7.0
+  - **shimmer: ^3.0.0
+  - **shared_preferences: ^2.2.0
+  - **sqflite: ^2.3.3+1
+  - **path: ^1.8.2
+  - **flutter_stripe: ^4.0.1
+  - **http: ^0.15.0
+  - **firebase_auth: ^5.2.1
+  - **firebase_core: ^3.4.1
+  - **firebase_storage: ^12.3.0
+  - **image_picker: ^1.1.2
+  - **cloud_firestore: ^5.4.1
+  - **intl: ^0.18.0
+  - **onesignal_flutter: ^5.2.5
 
 dev_dependencies:
-  hive_generator: ^1.0.0
-  build_runner: ^2.1.5
-  flutter_launcher_icons: ^0.13.1
+  - **hive_generator: ^1.0.0
+  - **build_runner: ^2.1.5
+  - **flutter_launcher_icons: ^0.13.1
