@@ -53,7 +53,7 @@ Watch a demo of the ToDo App here: [eCommerce Video](https://youtu.be/yEeQl5p0e_
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/your-username/eCommerceApp.git
+git clone https://github.com/Priya129/eCommerceApp.git
 cd eCommerceApp
 ```
 
