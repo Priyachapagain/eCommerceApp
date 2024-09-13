@@ -32,7 +32,7 @@ class _BillingPageState extends State<SingleBillingPage> {
   void initState() {
     super.initState();
     Stripe.publishableKey =
-    "pk_test_51PpRH6L7dY78ZxcIadPjWLA0d0oPj2SqKzzSAO7wfL6snXEJJn87X8DOaC3yooNBabX6IAauPxj2RZGPdxaREgOT00KK3RK870";
+    "your_publishable_key";
     _checkSignInStatus();
   }
 
