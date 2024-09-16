@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');  // Add CORS support
-const stripe = require('stripe')('sk_test_51PpRH6L7dY78ZxcIVW00yeLPPk7CUPfPybcDiijtYsgMaHyJPjvKJim1PTAZ295WJjXrLt8E4FSHwBQn0iw9z0Km00JRRs1X9N');  // Use environment variable for security
+const stripe = require('stripe')('');  // Use security_key
 const app = express();
 app.use(express.json());
 app.use(cors());  // Enable CORS for all routes
