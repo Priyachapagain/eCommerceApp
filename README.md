@@ -45,6 +45,3 @@ eCommerceApp is a Flutter-based mobile application designed to provide a seamles
 
 
 
-## Demo Video
-
-Watch a demo of the ToDo App here: [eCommerce Video](https://youtu.be/yEeQl5p0e_U?si=cmmF0fqYu5jGFEvO)
