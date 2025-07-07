@@ -5,7 +5,6 @@ eCommerceApp is a Flutter-based mobile application designed to provide a seamles
 ## Features
 
 - **Product List Fetching**: Displays a list of products with pagination.
-- **State Management**: Managed using Riverpod for efficient state handling.
 - **Offline Functionality**: Integrated Hive for storing data offline.
 - **Search & Filter**: Includes search functionality with category-wise filtering.
 - **Cart Management**: SQLite is used to manage products added to the cart.
